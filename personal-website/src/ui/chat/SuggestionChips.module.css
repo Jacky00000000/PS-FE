@@ -1,0 +1,42 @@
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.chip {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 12px;
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: left;
+}
+
+.chip:hover {
+  background: var(--surface-hover);
+}
+
+.chip:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (min-width: 768px) {
+  .chips {
+    gap: 12px;
+    padding: 0;
+  }
+
+  .chip {
+    font-size: 15px;
+  }
+}
