@@ -3,9 +3,7 @@
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 0 16px;
+  width: 100%;
 }
 
 .chip {
@@ -33,7 +31,6 @@
 @media (min-width: 768px) {
   .chips {
     gap: 12px;
-    padding: 0;
   }
 
   .chip {

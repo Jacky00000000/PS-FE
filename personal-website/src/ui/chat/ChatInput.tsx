@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import styles from './ChatInput.module.css'
 
 interface ChatInputProps {
@@ -27,6 +27,7 @@ export function ChatInput({
   placeholder = 'Ask me anything…',
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [hasContent, setHasContent] = useState(false)
 
   const adjustHeight = useCallback(() => {
     const el = textareaRef.current
@@ -34,6 +35,13 @@ export function ChatInput({
     el.style.height = 'auto'
     el.style.height = `${Math.min(el.scrollHeight, 160)}px`
   }, [])
+
+  const handleInput = useCallback(() => {
+    const el = textareaRef.current
+    if (!el) return
+    setHasContent(el.value.trim().length > 0)
+    adjustHeight()
+  }, [adjustHeight])
 
   const handleSubmit = useCallback(() => {
     const el = textareaRef.current
@@ -45,6 +53,7 @@ export function ChatInput({
     onSend(value)
     el.value = ''
     el.style.height = 'auto'
+    setHasContent(false)
   }, [disabled, onSend])
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -67,15 +76,15 @@ export function ChatInput({
           rows={1}
           placeholder={placeholder}
           disabled={disabled}
-          onInput={adjustHeight}
+          onInput={handleInput}
           onKeyDown={handleKeyDown}
         />
         <div className={styles.actions}>
           <button
             type="button"
-            className={styles.sendButton}
+            className={`${styles.sendButton} ${hasContent ? styles.sendButtonActive : ''}`}
             onClick={handleSubmit}
-            disabled={disabled}
+            disabled={disabled || !hasContent}
             aria-label="Send message"
           >
             <SendIcon />

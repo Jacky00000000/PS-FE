@@ -1,0 +1,41 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.paragraph {
+  margin: 0;
+}
+
+.paragraph + .paragraph {
+  margin-top: 0;
+}
+
+.list {
+  margin: 0;
+  padding-left: 1.25em;
+}
+
+.list li {
+  margin: 4px 0;
+  padding-left: 4px;
+}
+
+.list li::marker {
+  color: var(--text-secondary);
+}
+
+.content strong {
+  font-weight: 600;
+}
+
+.content em {
+  font-style: italic;
+}
+
+.content strong em,
+.content em strong {
+  font-weight: 600;
+  font-style: italic;
+}

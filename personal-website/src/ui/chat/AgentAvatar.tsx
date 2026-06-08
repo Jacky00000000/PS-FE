@@ -1,15 +1,23 @@
 import { useState } from 'react'
 import styles from './AgentAvatar.module.css'
 
-/** Place your photo at `public/agent-avatar.png` to replace the placeholder. */
-const AVATAR_SRC = '/agent-avatar.png'
+/** Uses the icon photo at `public/icons.jpeg` as the agent avatar. */
+const AVATAR_SRC = '/icons.jpeg'
 
-export function AgentAvatar() {
+interface AgentAvatarProps {
+  size?: 'lg' | 'sm'
+}
+
+export function AgentAvatar({ size = 'lg' }: AgentAvatarProps) {
   const [hasImage, setHasImage] = useState(true)
+  const sizeClass = size === 'sm' ? styles.sm : styles.lg
 
   if (!hasImage) {
     return (
-      <div className={styles.placeholder} aria-label="Agent avatar placeholder">
+      <div
+        className={`${styles.placeholder} ${sizeClass}`}
+        aria-label="Agent avatar placeholder"
+      >
         Add photo
       </div>
     )
@@ -17,7 +25,7 @@ export function AgentAvatar() {
 
   return (
     <img
-      className={styles.avatar}
+      className={`${styles.avatar} ${sizeClass}`}
       src={AVATAR_SRC}
       alt="AI agent avatar"
       onError={() => setHasImage(false)}

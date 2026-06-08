@@ -1,15 +1,13 @@
 .wrapper {
-  position: sticky;
-  bottom: 0;
-  padding: 12px 16px 20px;
-  background: linear-gradient(to top, var(--bg) 70%, transparent);
+  padding: 12px var(--chat-padding-x) 8px;
 }
 
 .container {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-width: 720px;
+  width: 100%;
+  max-width: var(--chat-max-width);
   margin: 0 auto;
   padding: 14px 16px;
   border-radius: 20px;
@@ -50,28 +48,34 @@
   height: 36px;
   border: none;
   border-radius: 50%;
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.sendButtonActive {
   background: var(--primary-blue);
   color: #fff;
   cursor: pointer;
-  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
-.sendButton:hover:not(:disabled) {
+.sendButtonActive:hover:not(:disabled) {
   opacity: 0.9;
 }
 
-.sendButton:active:not(:disabled) {
+.sendButtonActive:active:not(:disabled) {
   transform: scale(0.96);
 }
 
-.sendButton:disabled {
+.sendButtonActive:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
 @media (min-width: 768px) {
   .wrapper {
-    padding: 16px 24px 28px;
+    padding: 16px var(--chat-padding-x) 8px;
   }
 
   .container {

@@ -1,3 +1,5 @@
+import { AgentAvatar } from './AgentAvatar'
+import { MessageContent } from './MessageContent'
 import styles from './ChatMessage.module.css'
 
 interface ChatMessageProps {
@@ -8,7 +10,14 @@ interface ChatMessageProps {
 export function ChatMessage({ role, content }: ChatMessageProps) {
   return (
     <div className={`${styles.message} ${styles[role]}`}>
-      <div className={styles.bubble}>{content}</div>
+      {role === 'assistant' && (
+        <div className={styles.avatarSlot}>
+          <AgentAvatar size="sm" />
+        </div>
+      )}
+      <div className={styles.bubble}>
+        {role === 'assistant' ? <MessageContent content={content} /> : content}
+      </div>
     </div>
   )
 }
@@ -16,6 +25,9 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
 export function TypingIndicator() {
   return (
     <div className={`${styles.message} ${styles.assistant}`}>
+      <div className={styles.avatarSlot}>
+        <AgentAvatar size="sm" />
+      </div>
       <div className={styles.bubble}>
         <span className={styles.typing} aria-label="AI is typing">
           <span />

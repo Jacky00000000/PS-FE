@@ -1,9 +1,16 @@
 .message {
   display: flex;
-  gap: 12px;
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 8px 16px;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 0;
+}
+
+.assistant {
+  align-items: flex-end;
+}
+
+.avatarSlot {
+  flex-shrink: 0;
 }
 
 .user {
@@ -16,11 +23,11 @@
   border-radius: 18px;
   font-size: 15px;
   line-height: 1.55;
-  white-space: pre-wrap;
   word-break: break-word;
 }
 
 .assistant .bubble {
+  max-width: min(85%, calc(100% - 46px));
   background: var(--surface-muted);
   color: var(--text-primary);
   border-bottom-left-radius: 6px;
@@ -70,11 +77,15 @@
 
 @media (min-width: 768px) {
   .message {
-    padding: 10px 24px;
+    padding: 10px 0;
   }
 
   .bubble {
     max-width: 75%;
     font-size: 16px;
+  }
+
+  .assistant .bubble {
+    max-width: min(75%, calc(100% - 50px));
   }
 }

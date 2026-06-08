@@ -10,7 +10,6 @@ export function ChatPage() {
   const {
     messages,
     isLoading,
-    isInitializing,
     error,
     sendMessage,
     clearError,
@@ -26,33 +25,40 @@ export function ChatPage() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        {!hasMessages && !isInitializing && (
-          <section className={styles.welcome}>
-            <AgentAvatar />
-            <h2 className={styles.greeting}>Hi, I&apos;m your AI twin</h2>
-            <SuggestionChips onSelect={sendMessage} disabled={isLoading} />
-          </section>
-        )}
+        <div className={styles.chatColumn}>
+          {!hasMessages && (
+            <section className={styles.welcome}>
+              <AgentAvatar />
+              <h2 className={styles.greeting}>Hi, I&apos;m Jacky</h2>
+              <SuggestionChips onSelect={sendMessage} disabled={isLoading} />
+            </section>
+          )}
 
-        {hasMessages && (
-          <div className={styles.messages}>
-            {messages.map((msg) => (
-              <ChatMessage key={msg.id} role={msg.role} content={msg.content} />
-            ))}
-            {isLoading && <TypingIndicator />}
-          </div>
-        )}
+          {hasMessages && (
+            <div className={styles.messages}>
+              {messages.map((msg) => (
+                <ChatMessage key={msg.id} role={msg.role} content={msg.content} />
+              ))}
+              {isLoading && <TypingIndicator />}
+            </div>
+          )}
 
-        {error && (
-          <div className={styles.error} role="alert" onClick={clearError}>
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className={styles.error} role="alert" onClick={clearError}>
+              {error}
+            </div>
+          )}
 
-        <div ref={bottomRef} />
+          <div ref={bottomRef} />
+        </div>
       </main>
 
-      <ChatInput onSend={sendMessage} disabled={isLoading || isInitializing} />
+      <footer className={styles.footer}>
+        <ChatInput onSend={sendMessage} disabled={isLoading} />
+        <p className={styles.copyright}>
+          &copy; {new Date().getFullYear()} 鵬
+        </p>
+      </footer>
     </div>
   )
 }

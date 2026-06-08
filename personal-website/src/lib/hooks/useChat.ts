@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { ApiError } from '../api/client'
 import { chatbotApi } from '../api/chatbot'
-import type { ChatRecord } from '../api/types'
 
 export interface ChatMessage {
   id: string
@@ -9,45 +8,11 @@ export interface ChatMessage {
   content: string
 }
 
-function recordsToMessages(records: ChatRecord[]): ChatMessage[] {
-  return records.flatMap((record) => [
-    { id: `${record.id}-q`, role: 'user' as const, content: record.question },
-    { id: `${record.id}-a`, role: 'assistant' as const, content: record.answer },
-  ])
-}
-
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [isInitializing, setIsInitializing] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const pendingQuestionRef = useRef<string | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-
-    chatbotApi
-      .getRecords()
-      .then((records) => {
-        if (!cancelled) {
-          setMessages(recordsToMessages(records))
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setMessages([])
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setIsInitializing(false)
-        }
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
 
   const sendMessage = useCallback(async (question: string) => {
     const trimmed = question.trim()
@@ -95,7 +60,6 @@ export function useChat() {
   return {
     messages,
     isLoading,
-    isInitializing,
     error,
     sendMessage,
     clearError,
