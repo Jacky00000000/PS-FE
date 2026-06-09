@@ -29,10 +29,8 @@ export function TypingIndicator() {
         <AgentAvatar size="sm" />
       </div>
       <div className={styles.bubble}>
-        <span className={styles.typing} aria-label="AI is typing">
-          <span />
-          <span />
-          <span />
+        <span className={styles.typing} aria-label="load緊唔好急">
+          load緊唔好急...
         </span>
       </div>
     </div>

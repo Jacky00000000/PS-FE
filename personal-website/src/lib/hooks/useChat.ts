@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ApiError } from '../api/client'
 import { chatbotApi } from '../api/chatbot'
 
@@ -12,14 +12,13 @@ export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const pendingQuestionRef = useRef<string | null>(null)
 
   const sendMessage = useCallback(async (question: string) => {
     const trimmed = question.trim()
     if (!trimmed || isLoading) return
 
     const tempUserId = `temp-user-${Date.now()}`
-    pendingQuestionRef.current = trimmed
+    const history = messages.map(({ role, content }) => ({ role, content }))
 
     setMessages((prev) => [
       ...prev,
@@ -29,12 +28,14 @@ export function useChat() {
     setError(null)
 
     try {
-      const record = await chatbotApi.ask({ question: trimmed })
-      pendingQuestionRef.current = null
+      const record = await chatbotApi.ask({ question: trimmed, history })
 
       setMessages((prev) => [
-        ...prev.filter((msg) => msg.id !== tempUserId),
-        { id: `${record.id}-q`, role: 'user', content: record.question },
+        ...prev.map((msg) =>
+          msg.id === tempUserId
+            ? { id: `${record.id}-q`, role: 'user' as const, content: record.question }
+            : msg,
+        ),
         { id: `${record.id}-a`, role: 'assistant', content: record.answer },
       ])
     } catch (err) {
@@ -49,11 +50,10 @@ export function useChat() {
 
       setError(message)
       setMessages((prev) => prev.filter((msg) => msg.id !== tempUserId))
-      pendingQuestionRef.current = null
     } finally {
       setIsLoading(false)
     }
-  }, [isLoading])
+  }, [isLoading, messages])
 
   const clearError = useCallback(() => setError(null), [])
 

@@ -39,3 +39,54 @@
   font-weight: 600;
   font-style: italic;
 }
+
+.inlineCode {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.06);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.codeBlockWrapper {
+  position: relative;
+  margin: 4px 0;
+}
+
+.codeLang {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  pointer-events: none;
+}
+
+.codeBlock {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.04);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.55;
+  tab-size: 4;
+  white-space: pre;
+}
+
+.codeBlockWithLang {
+  padding-top: 28px;
+}
+
+.codeBlock code {
+  font-family: inherit;
+  font-size: inherit;
+}

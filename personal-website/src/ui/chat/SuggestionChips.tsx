@@ -5,6 +5,8 @@ const SUGGESTIONS = [
   '自我介紹下',
   '搵到工未 ?',
   '你幾多歲 ?',
+  '教我揼code',
+  '幫我揼下Leetcode第39題',
 ]
 
 interface SuggestionChipsProps {

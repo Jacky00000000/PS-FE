@@ -9,6 +9,54 @@ type Block =
   | { type: 'paragraph'; lines: string[] }
   | { type: 'ul'; items: string[] }
   | { type: 'ol'; items: string[] }
+  | { type: 'code'; language: string; code: string }
+
+const FENCE_OPEN = /^```(\w*)\s*$/
+const FENCE_CLOSE = /^```\s*$/
+
+function splitByCodeFences(text: string): Block[] {
+  const lines = text.split('\n')
+  const blocks: Block[] = []
+  let textLines: string[] = []
+  let index = 0
+
+  const flushText = () => {
+    if (textLines.length > 0) {
+      blocks.push(...parseBlocks(textLines.join('\n')))
+      textLines = []
+    }
+  }
+
+  while (index < lines.length) {
+    const line = lines[index]
+    const openMatch = line.trim().match(FENCE_OPEN)
+
+    if (openMatch) {
+      flushText()
+      const language = openMatch[1]
+      index += 1
+      const codeLines: string[] = []
+
+      while (index < lines.length && !FENCE_CLOSE.test(lines[index].trim())) {
+        codeLines.push(lines[index])
+        index += 1
+      }
+
+      if (index < lines.length) {
+        index += 1
+      }
+
+      blocks.push({ type: 'code', language, code: codeLines.join('\n') })
+      continue
+    }
+
+    textLines.push(line)
+    index += 1
+  }
+
+  flushText()
+  return blocks
+}
 
 function parseBlocks(text: string): Block[] {
   const lines = text.split('\n')
@@ -74,7 +122,8 @@ function parseBlocks(text: string): Block[] {
 
 function parseInline(text: string, keyPrefix: string): ReactNode[] {
   const nodes: ReactNode[] = []
-  const pattern = /(\*\*\*(.+?)\*\*\*|\*\*(.+?)\*\*|\*(.+?)\*)/g
+  const pattern =
+    /(\*\*\*(.+?)\*\*\*|\*\*(.+?)\*\*|\*(.+?)\*|`([^`]+)`)/g
   let lastIndex = 0
   let match: RegExpExecArray | null
   let index = 0
@@ -94,6 +143,12 @@ function parseInline(text: string, keyPrefix: string): ReactNode[] {
       nodes.push(<strong key={`${keyPrefix}-b${index}`}>{match[3]}</strong>)
     } else if (match[4]) {
       nodes.push(<em key={`${keyPrefix}-i${index}`}>{match[4]}</em>)
+    } else if (match[5]) {
+      nodes.push(
+        <code key={`${keyPrefix}-c${index}`} className={styles.inlineCode}>
+          {match[5]}
+        </code>,
+      )
     }
 
     lastIndex = match.index + match[0].length
@@ -120,8 +175,21 @@ function renderParagraph(lines: string[], key: string) {
   )
 }
 
+function renderCodeBlock(language: string, code: string, key: string) {
+  return (
+    <div key={key} className={styles.codeBlockWrapper}>
+      {language && <span className={styles.codeLang}>{language}</span>}
+      <pre
+        className={`${styles.codeBlock}${language ? ` ${styles.codeBlockWithLang}` : ''}`}
+      >
+        <code>{code}</code>
+      </pre>
+    </div>
+  )
+}
+
 export function MessageContent({ content }: MessageContentProps) {
-  const blocks = parseBlocks(content)
+  const blocks = splitByCodeFences(content)
 
   if (blocks.length === 0) {
     return null
@@ -130,6 +198,10 @@ export function MessageContent({ content }: MessageContentProps) {
   return (
     <div className={styles.content}>
       {blocks.map((block, index) => {
+        if (block.type === 'code') {
+          return renderCodeBlock(block.language, block.code, `code-${index}`)
+        }
+
         if (block.type === 'paragraph') {
           return renderParagraph(block.lines, `p-${index}`)
         }
