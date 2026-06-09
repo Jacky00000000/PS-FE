@@ -1,12 +1,10 @@
 import styles from './SuggestionChips.module.css'
 
 const SUGGESTIONS = [
-  'Who are you?',
-  'What do you do?',
-  'Tell me about your experience',
-  'What are your skills?',
-  'How can I contact you?',
-  'What projects have you worked on?',
+  '尼個乜嘢網站黎 ?',
+  '自我介紹下',
+  '搵到工未 ?',
+  '你幾多歲 ?',
 ]
 
 interface SuggestionChipsProps {
