@@ -30,7 +30,7 @@ export function TypingIndicator() {
       </div>
       <div className={styles.bubble}>
         <span className={styles.typing} aria-label="諗緊唔好急">
-          load緊唔好急...
+          諗緊唔好急...
         </span>
       </div>
     </div>
