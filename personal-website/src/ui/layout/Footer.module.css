@@ -1,0 +1,18 @@
+.footer {
+  flex-shrink: 0;
+  background: linear-gradient(to top, var(--bg) 85%, transparent);
+}
+
+.copyright {
+  margin: 0;
+  padding: 0 var(--chat-padding-x) 12px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .copyright {
+    padding-bottom: 16px;
+  }
+}

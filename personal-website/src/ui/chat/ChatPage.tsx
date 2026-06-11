@@ -53,12 +53,9 @@ export function ChatPage() {
         </div>
       </main>
 
-      <footer className={styles.footer}>
+      <div className={styles.inputBar}>
         <ChatInput onSend={sendMessage} disabled={isLoading} />
-        <p className={styles.copyright}>
-          &copy; {new Date().getFullYear()} 鵬
-        </p>
-      </footer>
+      </div>
     </div>
   )
 }

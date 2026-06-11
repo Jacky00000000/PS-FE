@@ -66,6 +66,9 @@ export function Header() {
         <NavItem href="/" label="Home page" icon={<HomeIcon />} isActive={isHome} />
         <NavItem href="/donation" label="Donation" icon={<DonationIcon />} isActive={isDonation} />
       </div>
+      <div className={styles.right}>
+        <img src="/Logo.png" alt="Jacky logo" className={styles.logo} />
+      </div>
     </header>
   )
 }
