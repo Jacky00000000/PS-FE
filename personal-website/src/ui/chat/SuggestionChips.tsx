@@ -2,9 +2,6 @@ import styles from './SuggestionChips.module.css'
 
 const SUGGESTIONS = [
   '尼個乜嘢網站黎 ?',
-  '自我介紹下',
-  '搵到工未 ?',
-  '你幾多歲 ?',
   '教我揼code',
   '幫我揼下Leetcode第39題',
 ]
