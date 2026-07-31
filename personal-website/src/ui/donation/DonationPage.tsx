@@ -13,7 +13,7 @@ export function DonationPage() {
         <section className={styles.content}>
           <h1 className={styles.title}>支持我</h1>
           <p className={styles.description}>
-            好窮，請課金。多謝晒！掃描下面嘅 QR 碼就可以啦～
+            多謝晒！掃描下面嘅 QR 碼就可以啦～
           </p>
           <div className={styles.qrWrapper}>
             {!qrLoaded && !qrFailed && (

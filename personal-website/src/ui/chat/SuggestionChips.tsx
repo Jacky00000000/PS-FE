@@ -2,8 +2,8 @@ import styles from './SuggestionChips.module.css'
 
 const SUGGESTIONS = [
   '尼個乜嘢網站黎 ?',
-  '教我揼code',
-  '幫我揼下Leetcode第39題',
+  '教我 Python',
+  '幫我揼Leetcode第39題',
 ]
 
 interface SuggestionChipsProps {

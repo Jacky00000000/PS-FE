@@ -2,7 +2,7 @@ import { useState } from 'react'
 import styles from './AgentAvatar.module.css'
 
 /** Uses the icon photo at `public/icons.jpeg` as the agent avatar. */
-const AVATAR_SRC = '/icons.jpeg'
+const AVATAR_SRC = '/iconAi.png'
 
 interface AgentAvatarProps {
   size?: 'lg' | 'sm'
