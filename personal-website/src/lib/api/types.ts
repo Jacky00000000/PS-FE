@@ -3,6 +3,13 @@ export interface ChatRecord {
   question: string
   answer: string
   created_at: string
+  sources: ChatSource[]
+}
+
+export interface ChatSource {
+  id: string
+  title: string
+  url: string
 }
 
 export interface HistoryMessage {
