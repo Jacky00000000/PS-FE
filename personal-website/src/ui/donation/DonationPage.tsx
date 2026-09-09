@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import styles from './DonationPage.module.css'
-import QRcode from '../../assets/QRCode.jpeg'
 
 export function DonationPage() {
   const [qrLoaded, setQrLoaded] = useState(false)
@@ -26,7 +25,7 @@ export function DonationPage() {
               </div>
             )}
             <img
-              src={QRcode}
+              src="../../assets/QRCode.jpeg"
               alt="Donation QR code"
               className={`${styles.qrImage} ${qrLoaded ? styles.qrImageVisible : ''}`}
               onLoad={() => setQrLoaded(true)}
