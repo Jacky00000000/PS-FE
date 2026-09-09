@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import styles from './DonationPage.module.css'
-
-const QR_CODE_SRC = '/QRcode.jpeg'
+import QRcode from '../../assets/QRCode.jpeg'
 
 export function DonationPage() {
   const [qrLoaded, setQrLoaded] = useState(false)
@@ -13,7 +12,7 @@ export function DonationPage() {
         <section className={styles.content}>
           <h1 className={styles.title}>支持我</h1>
           <p className={styles.description}>
-            多謝晒！掃描下面嘅 QR 碼就可以啦～啲API key要錢㗎...
+            多謝晒！掃描下面嘅 QR 碼就可以啦~啲API key要錢㗎...
           </p>
           <div className={styles.qrWrapper}>
             {!qrLoaded && !qrFailed && (
@@ -27,7 +26,7 @@ export function DonationPage() {
               </div>
             )}
             <img
-              src={QR_CODE_SRC}
+              src={QRcode}
               alt="Donation QR code"
               className={`${styles.qrImage} ${qrLoaded ? styles.qrImageVisible : ''}`}
               onLoad={() => setQrLoaded(true)}

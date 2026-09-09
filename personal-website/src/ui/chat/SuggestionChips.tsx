@@ -2,9 +2,10 @@ import styles from './SuggestionChips.module.css'
 
 const SUGGESTIONS = [
   '尼個乜嘢網站黎 ?',
-  '教我 Python',
+  'Python 新手教學',
+  '幫我寫一個簡單嘅 Python 程式',
   '香港近期新聞',
-  '幫我寫一個簡單嘅 HTML 網頁',
+  'idle 10大熱門歌曲',
 ]
 
 interface SuggestionChipsProps {

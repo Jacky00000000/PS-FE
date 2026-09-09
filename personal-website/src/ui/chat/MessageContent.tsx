@@ -9,6 +9,7 @@ type Block =
   | { type: 'paragraph'; lines: string[] }
   | { type: 'heading'; level: 2 | 3; text: string }
   | { type: 'hr' }
+  | { type: 'table'; headers: string[]; rows: string[][] }
   | { type: 'sources'; items: SourceItem[] }
   | { type: 'ul'; items: string[] }
   | { type: 'ol'; items: string[] }
@@ -21,6 +22,19 @@ interface SourceItem {
 }
 
 type SourceLinks = Record<string, string>
+
+function splitTableRow(line: string): string[] {
+  return line
+    .trim()
+    .replace(/^\||\|$/g, '')
+    .split('|')
+    .map((cell) => cell.trim())
+}
+
+function isTableSeparator(line: string): boolean {
+  const cells = splitTableRow(line)
+  return cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell))
+}
 
 const FENCE_OPEN = /^```(\w*)\s*$/
 const FENCE_CLOSE = /^```\s*$/
@@ -99,7 +113,8 @@ function parseBlocks(text: string): Block[] {
     }
   }
 
-  for (const line of lines) {
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+    const line = lines[lineIndex]
     const trimmed = line.trim()
     const headingMatch = trimmed.match(/^(#{2,3})\s+(.+?)\s*#*$/)
     const sourceMatch = trimmed.match(
@@ -107,6 +122,31 @@ function parseBlocks(text: string): Block[] {
     )
     const ulMatch = trimmed.match(/^[-*•]\s+(.+)/)
     const olMatch = trimmed.match(/^\d+\.\s+(.+)/)
+
+    if (trimmed.includes('|') && lineIndex + 1 < lines.length) {
+      const headers = splitTableRow(line)
+      const separator = lines[lineIndex + 1]
+
+      if (headers.length > 0 && isTableSeparator(separator)) {
+        flushParagraph()
+        flushList()
+        flushSources()
+        lineIndex += 1
+        const rows: string[][] = []
+
+        while (lineIndex + 1 < lines.length) {
+          const nextLine = lines[lineIndex + 1].trim()
+          if (!nextLine.includes('|') || nextLine === '') {
+            break
+          }
+          lineIndex += 1
+          rows.push(splitTableRow(lines[lineIndex]))
+        }
+
+        blocks.push({ type: 'table', headers, rows })
+        continue
+      }
+    }
 
     if (headingMatch) {
       flushParagraph()
@@ -219,11 +259,12 @@ function parseInline(
           {sourceIds.map((sourceId) => (
             <a
               key={sourceId}
+              className={styles.citation}
               href={sourceLinks[sourceId]}
               target="_blank"
               rel="noreferrer"
             >
-              [{sourceId}]
+              {sourceId}
             </a>
           ))}
         </Fragment>,
@@ -286,13 +327,105 @@ function renderSources(items: SourceItem[], key: string) {
     <div key={key} className={styles.sources}>
       {items.map((item) => (
         <div key={`${key}-${item.id}`}>
-          <a href={item.url} target="_blank" rel="noreferrer">
+          <a
+            className={styles.sourceLink}
+            href={item.url}
+            target="_blank"
+            rel="noreferrer"
+          >
             [{item.id}] {item.title}
           </a>
         </div>
       ))}
     </div>
   )
+}
+
+function renderTable(
+  headers: string[],
+  rows: string[][],
+  key: string,
+  sourceLinks: SourceLinks,
+) {
+  return (
+    <div key={key} className={styles.tableWrapper}>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            {headers.map((header, index) => (
+              <th key={`${key}-header-${index}`} scope="col">
+                {parseInline(header, `${key}-header-${index}`, sourceLinks)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, rowIndex) => (
+            <tr key={`${key}-row-${rowIndex}`}>
+              {headers.map((_, cellIndex) => (
+                <td key={`${key}-cell-${rowIndex}-${cellIndex}`}>
+                  {parseInline(
+                    row[cellIndex] ?? '',
+                    `${key}-cell-${rowIndex}-${cellIndex}`,
+                    sourceLinks,
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+const codeTokenPattern =
+  /(#[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b(?:def|if|else|elif|for|while|in|return|import|from|as|class|try|except|finally|with|and|or|not|True|False|None|const|let|function|throw|new)\b|\b(?:print|len|range|str|int|float|list|dict|map|filter|console|log)\b|\b\d+(?:\.\d+)?\b)/g
+
+function highlightCode(code: string, key: string) {
+  const nodes: ReactNode[] = []
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+  let index = 0
+
+  while ((match = codeTokenPattern.exec(code)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(code.slice(lastIndex, match.index))
+    }
+
+    const token = match[0]
+    let tokenClass = styles.codeNumber
+
+    if (token.startsWith('#')) {
+      tokenClass = styles.codeComment
+    } else if (token.startsWith('"') || token.startsWith("'")) {
+      tokenClass = styles.codeString
+    } else if (/^\d/.test(token)) {
+      tokenClass = styles.codeNumber
+    } else if (
+      /^(?:print|len|range|str|int|float|list|dict|map|filter|console|log)$/.test(
+        token,
+      )
+    ) {
+      tokenClass = styles.codeBuiltin
+    } else {
+      tokenClass = styles.codeKeyword
+    }
+
+    nodes.push(
+      <span key={`${key}-${index}`} className={tokenClass}>
+        {token}
+      </span>,
+    )
+    lastIndex = match.index + token.length
+    index += 1
+  }
+
+  if (lastIndex < code.length) {
+    nodes.push(code.slice(lastIndex))
+  }
+
+  return nodes
 }
 
 function renderCodeBlock(language: string, code: string, key: string) {
@@ -302,7 +435,7 @@ function renderCodeBlock(language: string, code: string, key: string) {
       <pre
         className={`${styles.codeBlock}${language ? ` ${styles.codeBlockWithLang}` : ''}`}
       >
-        <code>{code}</code>
+        <code>{highlightCode(code, key)}</code>
       </pre>
     </div>
   )
@@ -337,6 +470,15 @@ export function MessageContent({ content }: MessageContentProps) {
 
         if (block.type === 'hr') {
           return <hr key={`hr-${index}`} className={styles.rule} />
+        }
+
+        if (block.type === 'table') {
+          return renderTable(
+            block.headers,
+            block.rows,
+            `table-${index}`,
+            sourceLinks,
+          )
         }
 
         if (block.type === 'sources') {

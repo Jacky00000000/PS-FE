@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { navigate, usePathname } from '../../lib/hooks/usePathname'
 import styles from './Header.module.css'
+import Logo from '../../assets/Logo.png'
 
 function HomeIcon() {
   return (
@@ -67,7 +68,7 @@ export function Header() {
         <NavItem href="/donation" label="Donation" icon={<DonationIcon />} isActive={isDonation} />
       </div>
       <div className={styles.right}>
-        <img src="/Logo.png" alt="Jacky logo" className={styles.logo} />
+        <img src={Logo} alt="Jacky logo" className={styles.logo} />
       </div>
     </header>
   )

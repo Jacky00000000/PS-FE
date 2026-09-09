@@ -33,6 +33,16 @@
   border-bottom-left-radius: 6px;
 }
 
+@media (max-width: 767px) {
+  .assistant .avatarSlot {
+    display: none;
+  }
+
+  .assistant .bubble {
+    max-width: 85%;
+  }
+}
+
 .user .bubble {
   background: var(--primary-blue);
   color: #fff;
