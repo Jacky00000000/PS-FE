@@ -31,6 +31,13 @@
   line-height: 1.5;
 }
 
+.sourcesHeading {
+  margin: 4px 0 2px;
+  color: var(--text-primary);
+  font-size: 1em;
+  font-weight: 600;
+}
+
 .sourceLink {
   color: var(--text-secondary);
   text-decoration: none;
@@ -43,16 +50,29 @@
   text-decoration: underline;
 }
 
+.autoLink {
+  color: var(--primary-blue);
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.autoLink:hover,
+.autoLink:focus-visible,
+.autoLink:active {
+  color: #0056b3;
+}
+
 .citation {
   display: inline-flex;
-  min-width: 1.6em;
-  height: 1.6em;
+  width: 1.7em;
+  height: 1.7em;
   align-items: center;
   justify-content: center;
   margin: 0 1px;
-  padding: 0 0.38em;
-  border: 1px solid #aeaeb0;
-  border-radius: 999px;
+  border: 1px solid #959393;
+  border-radius: 50%;
   background: #959393;
   color: #ffffff;
   font-size: 0.76em;
@@ -60,6 +80,13 @@
   line-height: 1;
   text-decoration: none;
   vertical-align: 0.08em;
+}
+
+.citationLong {
+  width: auto;
+  min-width: 1.7em;
+  padding: 0 0.45em;
+  border-radius: 999px;
 }
 
 .citation:hover,

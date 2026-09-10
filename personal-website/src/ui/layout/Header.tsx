@@ -44,6 +44,7 @@ function NavItem({
     <a
       href={href}
       className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
+      aria-label={label}
       aria-current={isActive ? 'page' : undefined}
       onClick={(event) => {
         event.preventDefault()

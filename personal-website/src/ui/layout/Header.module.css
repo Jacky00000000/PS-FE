@@ -23,24 +23,6 @@
   justify-content: flex-end;
 }
 
-.center {
-  flex: 0 1 auto;
-  text-align: center;
-}
-
-.title {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.subtitle {
-  margin: 2px 0 0;
-  font-size: 11px;
-  color: var(--text-secondary);
-}
-
 .navLink {
   display: inline-flex;
   align-items: center;

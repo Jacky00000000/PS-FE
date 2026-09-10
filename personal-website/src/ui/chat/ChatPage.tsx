@@ -37,16 +37,21 @@ export function ChatPage() {
           {hasMessages && (
             <div className={styles.messages}>
               {messages.map((msg) => (
-                <ChatMessage key={msg.id} role={msg.role} content={msg.content} />
+                <ChatMessage
+                  key={msg.id}
+                  role={msg.role}
+                  content={msg.content}
+                  sources={msg.sources}
+                />
               ))}
               {isLoading && <TypingIndicator />}
             </div>
           )}
 
           {error && (
-            <div className={styles.error} role="alert" onClick={clearError}>
+            <button className={styles.error} type="button" role="alert" onClick={clearError}>
               {error}
-            </div>
+            </button>
           )}
 
           <div ref={bottomRef} />

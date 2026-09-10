@@ -1,8 +1,10 @@
 import { Fragment, type ReactNode } from 'react'
+import type { ChatSource } from '../../lib/api/types'
 import styles from './MessageContent.module.css'
 
 interface MessageContentProps {
   content: string
+  sources?: ChatSource[]
 }
 
 type Block =
@@ -10,16 +12,9 @@ type Block =
   | { type: 'heading'; level: 2 | 3; text: string }
   | { type: 'hr' }
   | { type: 'table'; headers: string[]; rows: string[][] }
-  | { type: 'sources'; items: SourceItem[] }
   | { type: 'ul'; items: string[] }
   | { type: 'ol'; items: string[] }
   | { type: 'code'; language: string; code: string }
-
-interface SourceItem {
-  id: string
-  title: string
-  url: string
-}
 
 type SourceLinks = Record<string, string>
 
@@ -36,7 +31,15 @@ function isTableSeparator(line: string): boolean {
   return cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell))
 }
 
-const FENCE_OPEN = /^```(\w*)\s*$/
+function trimUrlPunctuation(url: string): string {
+  return url.replace(/[.,!?;:，。！？；：]+$/g, '')
+}
+
+function isHttpUrl(value: string): boolean {
+  return /^https?:\/\/\S+$/i.test(value)
+}
+
+const FENCE_OPEN = /^```([^\s]*)\s*$/
 const FENCE_CLOSE = /^```\s*$/
 
 function splitByCodeFences(text: string): Block[] {
@@ -89,7 +92,6 @@ function parseBlocks(text: string): Block[] {
   let paragraphLines: string[] = []
   let listItems: string[] = []
   let listType: 'ul' | 'ol' | null = null
-  let sourceItems: SourceItem[] = []
 
   const flushParagraph = () => {
     if (paragraphLines.length > 0) {
@@ -106,20 +108,10 @@ function parseBlocks(text: string): Block[] {
     }
   }
 
-  const flushSources = () => {
-    if (sourceItems.length > 0) {
-      blocks.push({ type: 'sources', items: sourceItems })
-      sourceItems = []
-    }
-  }
-
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
     const line = lines[lineIndex]
     const trimmed = line.trim()
     const headingMatch = trimmed.match(/^(#{2,3})\s+(.+?)\s*#*$/)
-    const sourceMatch = trimmed.match(
-      /^[-*]\s+\[([^\]]+)\]\s+(.+?)\s+[—-]\s+(https?:\/\/\S+)$/,
-    )
     const ulMatch = trimmed.match(/^[-*•]\s+(.+)/)
     const olMatch = trimmed.match(/^\d+\.\s+(.+)/)
 
@@ -130,7 +122,6 @@ function parseBlocks(text: string): Block[] {
       if (headers.length > 0 && isTableSeparator(separator)) {
         flushParagraph()
         flushList()
-        flushSources()
         lineIndex += 1
         const rows: string[][] = []
 
@@ -151,7 +142,6 @@ function parseBlocks(text: string): Block[] {
     if (headingMatch) {
       flushParagraph()
       flushList()
-      flushSources()
       blocks.push({
         type: 'heading',
         level: headingMatch[1].length as 2 | 3,
@@ -163,25 +153,12 @@ function parseBlocks(text: string): Block[] {
     if (/^(?:---+|\*\*\*+|___+)$/.test(trimmed)) {
       flushParagraph()
       flushList()
-      flushSources()
       blocks.push({ type: 'hr' })
-      continue
-    }
-
-    if (sourceMatch) {
-      flushParagraph()
-      flushList()
-      sourceItems.push({
-        id: sourceMatch[1],
-        title: sourceMatch[2],
-        url: sourceMatch[3],
-      })
       continue
     }
 
     if (ulMatch) {
       flushParagraph()
-      flushSources()
       if (listType !== 'ul') {
         flushList()
         listType = 'ul'
@@ -192,7 +169,6 @@ function parseBlocks(text: string): Block[] {
 
     if (olMatch) {
       flushParagraph()
-      flushSources()
       if (listType !== 'ol') {
         flushList()
         listType = 'ol'
@@ -202,7 +178,6 @@ function parseBlocks(text: string): Block[] {
     }
 
     flushList()
-    flushSources()
 
     if (trimmed === '') {
       flushParagraph()
@@ -212,7 +187,6 @@ function parseBlocks(text: string): Block[] {
   }
 
   flushList()
-  flushSources()
   flushParagraph()
 
   return blocks
@@ -225,7 +199,7 @@ function parseInline(
 ): ReactNode[] {
   const nodes: ReactNode[] = []
   const pattern =
-    /(\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\[([^\]]+)\]|\*\*\*(.+?)\*\*\*|\*\*(.+?)\*\*|\*(.+?)\*|`([^`]+)`)/g
+    /(\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\[([^\]]+)\]|\*\*\*(.+?)\*\*\*|\*\*(.+?)\*\*|\*(.+?)\*|`([^`]+)`|(https?:\/\/[^\s<>"']+))/g
   let lastIndex = 0
   let match: RegExpExecArray | null
   let index = 0
@@ -259,7 +233,7 @@ function parseInline(
           {sourceIds.map((sourceId) => (
             <a
               key={sourceId}
-              className={styles.citation}
+              className={`${styles.citation}${sourceId.length > 2 ? ` ${styles.citationLong}` : ''}`}
               href={sourceLinks[sourceId]}
               target="_blank"
               rel="noreferrer"
@@ -282,10 +256,45 @@ function parseInline(
     } else if (match[7]) {
       nodes.push(<em key={`${keyPrefix}-i${index}`}>{match[7]}</em>)
     } else if (match[8]) {
+      const codeValue = trimUrlPunctuation(match[8])
+      const trailingText = match[8].slice(codeValue.length)
+
+      if (isHttpUrl(codeValue)) {
+        nodes.push(
+          <Fragment key={`${keyPrefix}-c${index}`}>
+            <a
+              className={styles.autoLink}
+              href={codeValue}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {codeValue}
+            </a>
+            {trailingText}
+          </Fragment>,
+        )
+      } else {
+        nodes.push(
+          <code key={`${keyPrefix}-c${index}`} className={styles.inlineCode}>
+            {match[8]}
+          </code>,
+        )
+      }
+    } else if (match[9]) {
+      const url = trimUrlPunctuation(match[9])
+      const trailingText = match[9].slice(url.length)
       nodes.push(
-        <code key={`${keyPrefix}-c${index}`} className={styles.inlineCode}>
-          {match[8]}
-        </code>,
+        <Fragment key={`${keyPrefix}-u${index}`}>
+          <a
+            className={styles.autoLink}
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {url}
+          </a>
+          {trailingText}
+        </Fragment>,
       )
     }
 
@@ -322,9 +331,10 @@ function renderHeading(level: 2 | 3, text: string, key: string, sourceLinks: Sou
   )
 }
 
-function renderSources(items: SourceItem[], key: string) {
+function renderSources(items: ChatSource[], key: string) {
   return (
-    <div key={key} className={styles.sources}>
+    <section key={key} className={styles.sources}>
+      <h3 className={styles.sourcesHeading}>Sources</h3>
       {items.map((item) => (
         <div key={`${key}-${item.id}`}>
           <a
@@ -337,7 +347,7 @@ function renderSources(items: SourceItem[], key: string) {
           </a>
         </div>
       ))}
-    </div>
+    </section>
   )
 }
 
@@ -394,7 +404,7 @@ function highlightCode(code: string, key: string) {
     }
 
     const token = match[0]
-    let tokenClass = styles.codeNumber
+    let tokenClass: string
 
     if (token.startsWith('#')) {
       tokenClass = styles.codeComment
@@ -441,12 +451,10 @@ function renderCodeBlock(language: string, code: string, key: string) {
   )
 }
 
-export function MessageContent({ content }: MessageContentProps) {
+export function MessageContent({ content, sources = [] }: MessageContentProps) {
   const blocks = splitByCodeFences(content)
   const sourceLinks = Object.fromEntries(
-    [...content.matchAll(/^[-*]\s+\[([^\]]+)\]\s+.+?\s+[—-]\s+(https?:\/\/\S+)\s*$/gm)].map(
-      (match) => [match[1], match[2]],
-    ),
+    sources.map((source) => [source.id, source.url]),
   )
 
   if (blocks.length === 0) {
@@ -481,10 +489,6 @@ export function MessageContent({ content }: MessageContentProps) {
           )
         }
 
-        if (block.type === 'sources') {
-          return renderSources(block.items, `sources-${index}`)
-        }
-
         if (block.type === 'ul') {
           return (
             <ul key={`ul-${index}`} className={styles.list}>
@@ -507,6 +511,7 @@ export function MessageContent({ content }: MessageContentProps) {
           </ol>
         )
       })}
+      {sources.length > 0 && renderSources(sources, 'api-sources')}
     </div>
   )
 }

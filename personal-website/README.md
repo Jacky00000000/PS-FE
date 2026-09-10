@@ -35,41 +35,39 @@ export default defineConfig([
       // Other configs...
     ],
     languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
+      # Personal Website
+
+      React + TypeScript + Vite personal website with an AI chat page and donation page.
+
+      ## Local development
+
+      ```bash
+      npm install
+      npm run dev
+      ```
+
+      The app expects `VITE_API_BASE_URL` in a `.env` file:
+
+      ```env
+      VITE_API_BASE_URL=http://localhost:8000
+      ```
+
+      The chat client sends `POST /api/chatbot/ask/` with a question and optional conversation history. The response must include `id`, `question`, `answer`, `created_at`, and a `sources` array containing `id`, `title`, and an `http` or `https` URL.
+
+      ## Checks
+
+      ```bash
+      npm run lint
+      npm run build
+      ```
+
+      ## Render
+
+      Use `personal-website` as the project root. The build command is:
+
+      ```bash
+      npm install && npm run build
+      ```
+
+      Set `VITE_API_BASE_URL` as a Render environment variable before deploying. Asset imports are case-sensitive in production, so filenames must match their imports exactly.
   },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```

@@ -1,11 +1,13 @@
 import { useCallback, useState } from 'react'
 import { ApiError } from '../api/client'
 import { chatbotApi } from '../api/chatbot'
+import type { ChatSource } from '../api/types'
 
 export interface ChatMessage {
   id: string
   role: 'user' | 'assistant'
   content: string
+  sources?: ChatSource[]
 }
 
 export function useChat() {
@@ -18,7 +20,9 @@ export function useChat() {
     if (!trimmed || isLoading) return
 
     const tempUserId = `temp-user-${Date.now()}`
-    const history = messages.map(({ role, content }) => ({ role, content }))
+    const history = messages
+      .slice(-20)
+      .map(({ role, content }) => ({ role, content }))
 
     setMessages((prev) => [
       ...prev,
@@ -36,7 +40,12 @@ export function useChat() {
             ? { id: `${record.id}-q`, role: 'user' as const, content: record.question }
             : msg,
         ),
-        { id: `${record.id}-a`, role: 'assistant', content: record.answer },
+        {
+          id: `${record.id}-a`,
+          role: 'assistant',
+          content: record.answer,
+          sources: record.sources,
+        },
       ])
     } catch (err) {
       const message =

@@ -42,13 +42,16 @@
 }
 
 .error {
+  width: 100%;
   margin: 0 0 12px;
   padding: 10px 16px;
+  border: 0;
   border-radius: 10px;
   background: #fff0f0;
   color: #c62828;
   font-size: 14px;
   text-align: center;
+  cursor: pointer;
 }
 
 .inputBar {

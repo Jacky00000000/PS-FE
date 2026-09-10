@@ -1,13 +1,15 @@
 import { AgentAvatar } from './AgentAvatar'
 import { MessageContent } from './MessageContent'
+import type { ChatSource } from '../../lib/api/types'
 import styles from './ChatMessage.module.css'
 
 interface ChatMessageProps {
   role: 'user' | 'assistant'
   content: string
+  sources?: ChatSource[]
 }
 
-export function ChatMessage({ role, content }: ChatMessageProps) {
+export function ChatMessage({ role, content, sources }: ChatMessageProps) {
   return (
     <div className={`${styles.message} ${styles[role]}`}>
       {role === 'assistant' && (
@@ -16,7 +18,11 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
         </div>
       )}
       <div className={styles.bubble}>
-        {role === 'assistant' ? <MessageContent content={content} /> : content}
+        {role === 'assistant' ? (
+          <MessageContent content={content} sources={sources} />
+        ) : (
+          content
+        )}
       </div>
     </div>
   )
