@@ -3,12 +3,13 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
+  overflow: hidden;
 }
 
 .main {
   flex: 1;
-  min-height: 120vh;
-  overflow-y: auto;
+  min-height: 0;
+  overflow: hidden;
   padding: 24px 0 40px;
 }
 
