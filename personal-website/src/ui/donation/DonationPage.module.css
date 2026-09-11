@@ -104,4 +104,13 @@
     padding: 0 16px;
   }
 
+  .avatarButton {
+    width: min(100%, 200px);
+  }
+
+  .moneyButton img {
+    width: 48px;
+    height: 48px;
+  }
+
 }
