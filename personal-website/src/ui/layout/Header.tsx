@@ -57,7 +57,13 @@ function NavItem({
   )
 }
 
-export function Header() {
+export function Header({
+  isDarkMode,
+  onThemeToggle,
+}: {
+  isDarkMode: boolean
+  onThemeToggle: () => void
+}) {
   const pathname = usePathname()
   const isHome = pathname === '/'
   const isDonation = pathname === '/donation'
@@ -69,7 +75,16 @@ export function Header() {
         <NavItem href="/donation" label="Donation" icon={<DonationIcon />} isActive={isDonation} />
       </div>
       <div className={styles.right}>
-        <img src={Logo} alt="Jacky logo" className={styles.logo} />
+        <button
+          type="button"
+          className={styles.themeToggle}
+          aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-pressed={isDarkMode}
+          title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          onClick={onThemeToggle}
+        >
+          <img src={Logo} alt="Jacky logo" className={styles.logo} />
+        </button>
       </div>
     </header>
   )

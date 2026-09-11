@@ -1,37 +1,73 @@
-import { useState } from 'react'
-import qrCode from '../../assets/QRcode.jpeg'
+import { useEffect, useState } from 'react'
+import characterHit from '../../assets/char-hit.png'
+import characterMoney from '../../assets/char-money-v2.png'
+import character from '../../assets/char.png'
+import moneyButtonImage from '../../assets/money-btn.png'
 import styles from './DonationPage.module.css'
 
+type CharacterState = 'normal' | 'money' | 'hit'
+
 export function DonationPage() {
-  const [qrLoaded, setQrLoaded] = useState(false)
-  const [qrFailed, setQrFailed] = useState(false)
+  const [characterState, setCharacterState] = useState<CharacterState>('normal')
+
+  useEffect(() => {
+    if (characterState === 'normal') {
+      return
+    }
+
+    const showCharacterTimer = window.setTimeout(() => {
+      setCharacterState('normal')
+    }, 1500)
+
+    return () => window.clearTimeout(showCharacterTimer)
+  }, [characterState])
 
   return (
     <div className={styles.page}>
       <main className={styles.main}>
         <section className={styles.content}>
-          <h1 className={styles.title}>支持我</h1>
-          <p className={styles.description}>
-            多謝晒！掃描下面嘅 QR 碼就可以啦~啲API key要錢㗎...
-          </p>
-          <div className={styles.qrWrapper}>
-            {!qrLoaded && !qrFailed && (
-              <div className={styles.qrPlaceholder} aria-hidden="true">
-                <span className={styles.qrPlaceholderText}>QR code</span>
-              </div>
-            )}
-            {qrFailed && (
-              <div className={styles.qrPlaceholder}>
-                <span className={styles.qrPlaceholderText}>QR code coming soon</span>
-              </div>
-            )}
-            <img
-              src={qrCode}
-              alt="Donation QR code"
-              className={`${styles.qrImage} ${qrLoaded ? styles.qrImageVisible : ''}`}
-              onLoad={() => setQrLoaded(true)}
-              onError={() => setQrFailed(true)}
-            />
+          <div className={styles.gameArea}>
+            <button
+              type="button"
+              className={styles.avatarButton}
+              aria-label="點擊人物"
+              title="點擊人物"
+              onClick={() => setCharacterState('hit')}
+            >
+              <img
+                src={character}
+                alt="API 小助手"
+                className={`${styles.avatar} ${
+                  characterState === 'normal' ? styles.avatarVisible : ''
+                }`}
+              />
+              <img
+                src={characterMoney}
+                alt=""
+                aria-hidden="true"
+                className={`${styles.avatar} ${
+                  characterState === 'money' ? styles.avatarVisible : ''
+                }`}
+              />
+              <img
+                src={characterHit}
+                alt=""
+                aria-hidden="true"
+                className={`${styles.avatar} ${
+                  characterState === 'hit' ? styles.avatarVisible : ''
+                }`}
+              />
+            </button>
+
+            <button
+              type="button"
+              className={styles.moneyButton}
+              aria-label="送出虛擬金錢"
+              title="送出虛擬金錢"
+              onClick={() => setCharacterState('money')}
+            >
+              <img src={moneyButtonImage} alt="" aria-hidden="true" />
+            </button>
           </div>
         </section>
       </main>

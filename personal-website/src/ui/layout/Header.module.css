@@ -50,6 +50,31 @@
   object-fit: contain;
 }
 
+.themeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.themeToggle:hover {
+  opacity: 0.75;
+}
+
+.themeToggle:active {
+  transform: scale(0.94);
+}
+
+.themeToggle:focus-visible {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 3px;
+}
+
 .navLabel {
   display: none;
 }

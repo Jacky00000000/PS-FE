@@ -7,8 +7,9 @@
 
 .main {
   flex: 1;
+  min-height: 120vh;
   overflow-y: auto;
-  padding: 32px 0;
+  padding: 24px 0 40px;
 }
 
 .content {
@@ -19,59 +20,87 @@
   text-align: center;
 }
 
-.title {
-  margin: 0 0 12px;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+.gameArea {
+  width: min(100%, 480px);
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
-.description {
-  margin: 0 auto 32px;
-  max-width: 420px;
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--text-secondary);
-}
-
-.qrWrapper {
+.avatarButton {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: min(400px, 100%);
-  aspect-ratio: 1074 / 1177;
-  overflow: hidden;
-  border-radius: 16px;
+  display: block;
+  width: min(100%, 280px);
+  aspect-ratio: 768 / 1365;
+  margin: 0 auto 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: url('../../assets/punch-cursor.png') 28 24, pointer;
+  animation: float 3s ease-in-out infinite;
 }
 
-.qrPlaceholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  border: 2px dashed var(--border);
-  border-radius: 16px;
-  background: var(--surface-muted);
-}
-
-.qrPlaceholderText {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.qrImage {
+.avatar {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  object-fit: contain;
+  object-position: center;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.5s ease;
 }
 
-.qrImageVisible {
+.avatarVisible {
   opacity: 1;
+}
+
+.moneyButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.moneyButton img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.moneyButton:hover {
+  transform: translateY(-2px);
+}
+
+.moneyButton:active {
+  transform: translateY(0);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: 16px 0 32px;
+  }
+
+  .gameArea {
+    padding: 0 16px;
+  }
+
 }
