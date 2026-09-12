@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { AgentAvatar } from './AgentAvatar'
 import { MessageContent } from './MessageContent'
 import type { ChatSource } from '../../lib/api/types'
@@ -29,6 +30,16 @@ export function ChatMessage({ role, content, sources }: ChatMessageProps) {
 }
 
 export function TypingIndicator() {
+  const [elapsedSeconds, setElapsedSeconds] = useState(0)
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setElapsedSeconds((seconds) => seconds + 1)
+    }, 1000)
+
+    return () => window.clearInterval(intervalId)
+  }, [])
+
   return (
     <div className={`${styles.message} ${styles.assistant}`}>
       <div className={styles.avatarSlot}>
@@ -36,7 +47,7 @@ export function TypingIndicator() {
       </div>
       <div className={styles.bubble}>
         <span className={styles.typing} aria-label="諗緊唔好急">
-          諗緊唔好急...
+          諗緊唔好急... ({elapsedSeconds}s)
         </span>
       </div>
     </div>
